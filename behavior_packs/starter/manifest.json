@@ -1,0 +1,46 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Fun minecraft server resource pack",
+    "description": "[V1.0.4]",
+    "uuid": "90430917-0e61-48c1-800e-babda0b3bd36",
+    "version": [
+      1,
+      0,
+      4
+    ],
+    "min_engine_version": [
+      1,
+      20,
+      30
+    ]
+  },
+  "modules": [
+    {
+      "description": "Main Module",
+      "language": "javascript",
+      "type": "script",
+      "uuid": "25e85d26-21d7-4356-bbf0-8cdcdffff004",
+      "version": [
+        1,
+        0,
+        3
+      ],
+      "entry": "scripts/main.js"
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "1.11.0-beta"
+    },
+    {
+      "uuid": "2d7ed858-97eb-48a0-b180-7c80d1ce9a48",
+      "version": [
+        1,
+        0,
+        0
+      ]
+    }
+  ]
+}
