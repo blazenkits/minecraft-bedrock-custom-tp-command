@@ -1,12 +1,12 @@
 {
   "format_version": 2,
   "header": {
-    "name": "재밌는 마크서버 behavior pack",
-    "description": "[V1.1.2] 4/28/2024",
+    "name": "Fun minecraft server resource pack",
+    "description": "[V1.3.2]",
     "uuid": "90430917-0e61-48c1-800e-babda0b3bd36",
     "version": [
       1,
-      1,
+      3,
       2
     ],
     "min_engine_version": [
