@@ -22,7 +22,7 @@
 - 아이템 저장 우선순위는 갑옷 -> 핫바 -> 인벤 순입니다. 
 
 ### 네더 스폰 보호
-- 네더 안 `home`의 위치 근방에는 몹이 스폰할 수 없습니다.
+- 네더 안 `home`의 위치 근방에는 특정 몹 (스켈레톤, 가스트)가 스폰할 수 없습니다.
 - 기본값 xyz방향 100블록 (`WORLD_CONFIG_SCOREBOARD`의 `MOB_SPAWN_INHIBIT_RADIUS`를 통해 수정 가능)
 
 # Technical
