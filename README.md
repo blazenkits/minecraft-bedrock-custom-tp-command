@@ -23,6 +23,7 @@
 
 ### 네더 스폰 보호
 - 네더 안 `home`의 위치 근방에는 몹이 스폰할 수 없습니다.
+- 기본값 xyz방향 100블록 (`WORLD_CONFIG_SCOREBOARD`의 `MOB_SPAWN_INHIBIT_RADIUS`를 통해 수정 가능)
 
 # Technical
 ## Building
