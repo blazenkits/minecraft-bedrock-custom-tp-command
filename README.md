@@ -37,4 +37,4 @@ Tested on 1.20
 ## Installing
 1. Enable 'Experimental Features > Beta API' in your world.
 2. For the death chest spawning to work, Enable 'Cheats > Keep Inventory' in your world.
-3. You can modify the script constants from the `WORLD_CONFIG_SCOREBOARD`. To do this in-game, use `/scoreboard players set (variable_name) WORLD_CONFIG_SCOREBOARD (value)`
+3. You can modify the script constants from the `WORLD_CONFIG_SCOREBOARD`. To do this in-game, use `/scoreboard players set (variable_name) WORLD_CONFIG_SCOREBOARD (value)`, then `/reload`
