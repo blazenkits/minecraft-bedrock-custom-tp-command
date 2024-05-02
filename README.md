@@ -2,7 +2,7 @@
 ## 커맨드
 ### 사용자 순간이동
 `!tp <사용자이름>`
-- 순간이동시, 경험치를 모두 잃게 됩니다.
+- 순간이동시, 경험치를 얼마정도 잃게 됩니다.
 
 ### 집으로 순간이동
 `!home`
@@ -12,6 +12,11 @@
 
 사용자의 위치를 집으로 설정합니다.
 - 오버월드에서만 설정이 가능합니다.
+
+### 데이터팩 재시작
+`!restart` (Operator만 접근가능)
+
+`!restart default`: 변수 초기화 (Operator만 접근가능)
 
 ## QoL 기능
 
@@ -37,4 +42,5 @@ Tested on 1.20
 ## Installing
 1. Enable 'Experimental Features > Beta API' in your world.
 2. For the death chest spawning to work, Enable 'Cheats > Keep Inventory' in your world.
-3. You can modify the script constants from the `WORLD_CONFIG_SCOREBOARD`. To do this in-game, use `/scoreboard players set (variable_name) WORLD_CONFIG_SCOREBOARD (value)`
+3. You can modify the script constants from the `WORLD_CONFIG_SCOREBOARD`. To do this in-game, use `/scoreboard players set (variable_name) WORLD_CONFIG_SCOREBOARD (value)`.
+See `config.WorldConfigs` for available`{variable_names}`.

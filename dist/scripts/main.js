@@ -486,10 +486,18 @@ var WORLD_CONFIG_SCOREBOARD = "WORLD_CONFIG_SCOREBOARD";
 var README_LINK = "https://bit.ly/3wimntH";
 var WorldConfigs = {
   TP_ENABLE: 1,
+  // Enable !tp
+  TP_CLEAR_LEVELS_AMOUNT: 3,
+  // Remove levels on tp
+  HOME_ENABLE: 1,
+  DEATH_SPAWN_CHEST_ENABLE: 1,
+  // Enable death chest
   NETHER_ENEMY_SPAWN_INHIBIT_ENABLE: 1,
-  NETHER_ENEMY_DEBUF_STRENGTH: 0,
-  MOB_SPAWN_INHIBIT_RADIUS: 100,
+  // Enable nether spawn inhibit
+  NETHER_MOB_SPAWN_INHIBIT_RADIUS: 100,
+  // Nether spawn inhibition radius
   DEBUG_LOG: 0
+  // Send debug messages (Should be turned off)
 };
 var NETHER_ENEMY_SPAWN_BLACKLIST = [
   "minecraft:skeleton",
@@ -502,6 +510,8 @@ function processCustomCommands(messageComponents, player) {
     return;
   switch (messageComponents[0]) {
     case "!tp": {
+      if (!WorldConfigs.TP_ENABLE)
+        return;
       if (messageComponents.length != 2) {
         player.sendMessage(`tp > \uC0AC\uC6A9\uBC95 '!tp <playername>'`);
         return;
@@ -511,7 +521,7 @@ function processCustomCommands(messageComponents, player) {
           let tpSuccess = player.tryTeleport(target.location, { dimension: target.dimension });
           if (tpSuccess) {
             player.sendMessage(`tp > ${target.name}\uC5D0\uAC8C \uC18C\uD658\uB418\uC5C8\uC2B5\uB2C8\uB2E4.`);
-            player.resetLevel();
+            player.addLevels(-WorldConfigs.TP_CLEAR_LEVELS_AMOUNT);
           } else {
             player.sendMessage(`tp > ${target.name}\uB294 \uD604\uC7AC \uC18C\uD658\uD560 \uC218 \uC788\uB294 \uC704\uCE58\uAC00 \uC544\uB2D9\uB2C8\uB2E4.`);
           }
@@ -523,12 +533,14 @@ function processCustomCommands(messageComponents, player) {
       return;
     }
     case "!sethome": {
+      if (!WorldConfigs.HOME_ENABLE)
+        return;
       if (player.dimension.id != "minecraft:overworld") {
         player.sendMessage(`sethome > \uD648 \uC124\uC815\uC740 \uC624\uBC84\uC6D4\uB4DC\uC5D0\uC11C\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.`);
         return;
       }
       if (!player.isOp) {
-        player.sendMessage(`sethome > \uD648 \uC124\uC815\uC740 Operator aaaa\uAD8C\uD55C\uC744 \uAC00\uC9C4 \uC0AC\uC6A9\uC790\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.`);
+        player.sendMessage(`sethome > \uD648 \uC124\uC815\uC740 Operator\uAD8C\uD55C\uC744 \uAC00\uC9C4 \uC0AC\uC6A9\uC790\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.`);
       }
       let hlScoreboard = world.scoreboard.getObjective(HOME_LOCATION_SCOREBOARD);
       if (!hlScoreboard) {
@@ -541,6 +553,8 @@ function processCustomCommands(messageComponents, player) {
       return;
     }
     case "!home": {
+      if (!WorldConfigs.HOME_ENABLE)
+        return;
       let hlScoreboard = world.scoreboard.getObjective(HOME_LOCATION_SCOREBOARD);
       if (!hlScoreboard) {
         player.sendMessage(`home > \uC9D1 \uC704\uCE58\uAC00 \uC124\uC815\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.`);
@@ -555,7 +569,7 @@ function processCustomCommands(messageComponents, player) {
           { dimension: world.getDimension("minecraft:overworld") }
         );
         if (tpSuccess) {
-          player.resetLevel();
+          player.addLevels(-WorldConfigs.TP_CLEAR_LEVELS_AMOUNT);
           player.sendMessage(`home > \uC9D1\uC73C\uB85C \uC18C\uD658\uB418\uC5C8\uC2B5\uB2C8\uB2E4.`);
         } else {
           player.sendMessage(`home > \uC9D1\uC740 \uD604\uC7AC \uC18C\uD658\uD560 \uC218 \uC788\uB294 \uC704\uCE58\uAC00 \uC544\uB2D9\uB2C8\uB2E4.`);
@@ -564,6 +578,34 @@ function processCustomCommands(messageComponents, player) {
       }
       player.sendMessage(`home > \uC624\uB958`);
       return;
+    }
+    case "!restart": {
+      if (!player.isOp) {
+        player.sendMessage(`restart > Operator\uAD8C\uD55C\uC744 \uAC00\uC9C4 \uC0AC\uC6A9\uC790\uB9CC \uAC00\uB2A5\uD569\uB2C8\uB2E4.`);
+      }
+      if (messageComponents.length == 2 && messageComponents[1] == "default") {
+        player.sendMessage(`restart default > \uC6D4\uB4DC \uBCC0\uC218\uAC00 \uCD08\uAE30\uD654\uB418\uC5C8\uC2B5\uB2C8\uB2E4.`);
+        world.scoreboard.removeObjective(WORLD_CONFIG_SCOREBOARD);
+      }
+      restartScript();
+    }
+  }
+}
+function restartScript() {
+  world.sendMessage(`server > \uC7AC\uC2DC\uC791\uD569\uB2C8\uB2E4.`);
+  let wcScoreboard = world.scoreboard.getObjective(WORLD_CONFIG_SCOREBOARD);
+  if (!wcScoreboard) {
+    wcScoreboard = world.scoreboard.addObjective(WORLD_CONFIG_SCOREBOARD, "World-Configs");
+    for (let s in WorldConfigs) {
+      wcScoreboard.setScore(s, WorldConfigs[s]);
+    }
+  } else {
+    for (let s of wcScoreboard.getScores()) {
+      let n = s.participant.displayName;
+      if (n in WorldConfigs) {
+        WorldConfigs[n] = s.score;
+        world.sendMessage(`server > WorldConfigs set ${n} to ${s.score}.`);
+      }
     }
   }
 }
@@ -584,24 +626,7 @@ world2.afterEvents.entityDie.subscribe(onEntityDie);
 world2.afterEvents.entitySpawn.subscribe(onEntitySpawn);
 world2.afterEvents.worldInitialize.subscribe(onWorldInitialize);
 function onWorldInitialize(eventData) {
-  let wcScoreboard = world2.scoreboard.getObjective(WORLD_CONFIG_SCOREBOARD);
-  if (!wcScoreboard) {
-    wcScoreboard = world2.scoreboard.addObjective(WORLD_CONFIG_SCOREBOARD, "World-Configs");
-    wcScoreboard.setScore("TP_ENABLE", 1);
-    wcScoreboard.setScore("NETHER_ENEMY_SPAWN_INHIBIT_ENABLE", 1);
-    wcScoreboard.setScore("NETHER_ENEMY_DEBUF_STRENGTH", 0);
-    wcScoreboard.setScore("MOB_SPAWN_INHIBIT_RADIUS", 50);
-    wcScoreboard.setScore("DEBUG_LOG", 0);
-  } else {
-    for (let s of wcScoreboard.getScores()) {
-      let n = s.participant.displayName;
-      world2.sendMessage(">>" + n);
-      if (n in WorldConfigs) {
-        WorldConfigs[n] = s.score;
-        world2.sendMessage(`Successfully configured WorldConfigs ${n} to ${s.score}.`);
-      }
-    }
-  }
+  restartScript();
 }
 var ticks = 1;
 function mainLoop() {
@@ -648,9 +673,9 @@ function onPlayerSpawn(eventData) {
         eventData.player.sendMessage("    " + message);
       }
     }
+    eventData.player.sendMessage(`====================================`);
   }
-  eventData.player.sendMessage(`\uC11C\uBC84 \uAE30\uB2A5 \uC124\uBA85: ${README_LINK}`);
-  eventData.player.sendMessage(`====================================`);
+  eventData.player.sendMessage(`(\uC11C\uBC84 \uAE30\uB2A5 \uC124\uBA85 \uC0AC\uC774\uD2B8: ${README_LINK})`);
 }
 function onPlayerChatSend(eventData) {
   let player = eventData.sender;
@@ -660,14 +685,16 @@ function onPlayerChatSend(eventData) {
 function onEntityDie(eventData) {
   let e = eventData.deadEntity;
   if (e instanceof Player2) {
+    if (!WorldConfigs.DEATH_SPAWN_CHEST_ENABLE)
+      return;
+    if (!world2.gameRules.keepInventory)
+      return;
     let inventory = e.getComponent(EntityComponentTypes.Inventory);
     let equipment = e.getComponent(EntityComponentTypes.Equippable);
     let pos = void 0;
-    if (!world2.gameRules.keepInventory)
-      return;
     if (inventory && equipment) {
       if (!(e.id in groundedPositionMap)) {
-        e.sendMessage("\uC11C\uBC84 > \uC5D0\uB7EC\uB85C \uC778\uD574 \uC544\uC774\uD15C\uC774 \uC720\uC9C0\uB418\uC5C8\uC2B5\uB2C8\uB2E4. \uAD00\uB9AC\uC790\uC5D0\uAC8C \uBB38\uC758\uD574 \uC8FC\uC138\uC694");
+        e.sendMessage("\uC11C\uBC84 > \uC0AC\uB9DD \uC704\uCE58 \uC8FC\uBCC0\uC5D0 \uC0C1\uC790\uB97C \uB9CC\uB4E4 \uC218 \uC5C6\uC5C8\uC2B5\uB2C8\uB2E4.");
         return;
       }
       pos = {
@@ -675,15 +702,12 @@ function onEntityDie(eventData) {
         y: groundedPositionMap[e.id].y,
         z: groundedPositionMap[e.id].z
       };
-      console.log(pos.x, pos.y, pos.z);
       e.dimension.setBlockType(pos, "minecraft:chest");
       if (pos) {
-        console.log(1);
         let chest = e.dimension.getBlock(pos);
         let chestContainer = chest?.getComponent(BlockComponentTypes.Inventory)?.container;
         let size = inventory.container?.size;
         if (chestContainer && size) {
-          console.log(2);
           for (let slot of [
             EquipmentSlot.Chest,
             EquipmentSlot.Feet,
@@ -694,17 +718,17 @@ function onEntityDie(eventData) {
           ]) {
             let eq = equipment.getEquipment(slot);
             if (eq) {
-              let success = chestContainer.addItem(eq);
-              if (success instanceof ItemStack) {
-                e.dimension.spawnItem(success, { x: pos.x, y: pos.y + 1, z: pos.z });
+              let remainder = chestContainer.addItem(eq);
+              if (remainder instanceof ItemStack) {
+                e.dimension.spawnItem(remainder, { x: pos.x, y: pos.y + 1, z: pos.z });
               }
             }
             equipment.setEquipment(slot, void 0);
           }
           for (let i = 0; i < size; i++) {
-            let success = inventory.container?.transferItem(i, chestContainer);
-            if (success instanceof ItemStack) {
-              e.dimension.spawnItem(success, { x: pos.x, y: pos.y + 1, z: pos.z });
+            let remainder = inventory.container?.transferItem(i, chestContainer);
+            if (remainder instanceof ItemStack) {
+              e.dimension.spawnItem(remainder, { x: pos.x, y: pos.y + 1, z: pos.z });
             }
           }
           inventory.container?.clearAll();
@@ -717,13 +741,15 @@ function onEntityDie(eventData) {
   }
 }
 function onEntitySpawn(eventData) {
+  if (!WorldConfigs.NETHER_ENEMY_SPAWN_INHIBIT_ENABLE)
+    return;
   if (eventData.cause == EntityInitializationCause.Spawned) {
     if (eventData.entity.dimension.id == "minecraft:nether" && NETHER_ENEMY_SPAWN_BLACKLIST.indexOf(eventData.entity.typeId) != -1) {
       let hl = getHomeLocation();
       if (hl) {
         hl = import_math.Vector3Utils.scale(hl, 1 / 8);
         let l = import_math.Vector3Utils.distance(eventData.entity.location, hl);
-        if (l < WorldConfigs.MOB_SPAWN_INHIBIT_RADIUS) {
+        if (l < WorldConfigs.NETHER_MOB_SPAWN_INHIBIT_RADIUS) {
           dlog(`(onEntitySpawn) Removing nether enemy ${eventData.entity.typeId} (distance ${l} @ ${import_math.Vector3Utils.toString(eventData.entity.location, { decimals: 1 })})`);
           eventData.entity.remove();
         }

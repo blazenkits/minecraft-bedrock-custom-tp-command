@@ -2,12 +2,12 @@
   "format_version": 2,
   "header": {
     "name": "Fun minecraft server resource pack",
-    "description": "[V1.4.0]",
-    "uuid": "e0b6274d-0b6c-4256-b449-0fcdb895acbd",
+    "description": "[V1.5.0]",
+    "uuid": "90430917-0e61-48c1-800e-babda0b3bd36",
     "version": [
       1,
-      4,
-      1
+      5,
+      0
     ],
     "min_engine_version": [
       1,
